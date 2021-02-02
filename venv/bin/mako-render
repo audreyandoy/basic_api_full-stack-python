@@ -1,4 +1,4 @@
-#!/Users/audrey/Documents/Ada/audrey-practice/Flask_Migrate/venv/bin/python3
+#!/Users/audrey/Documents/Ada/audrey-practice/flask_workshop_fin/flask_api_db/venv/bin/python3
 # EASY-INSTALL-ENTRY-SCRIPT: 'Mako==1.1.4','console_scripts','mako-render'
 __requires__ = 'Mako==1.1.4'
 import re

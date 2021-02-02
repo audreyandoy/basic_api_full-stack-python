@@ -37,7 +37,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="/Users/audrey/Documents/Ada/audrey-practice/Flask_Migrate/venv"
+VIRTUAL_ENV="/Users/audrey/Documents/Ada/audrey-practice/flask_workshop_fin/flask_api_db/venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
