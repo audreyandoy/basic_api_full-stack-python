@@ -26,4 +26,4 @@ flask db migrate
 flask db upgrade 
 ```
 
-Now you have a restful api! 
+Now you have a restful api via localhost:5000/api, or localhost:3000 when the frontend is running. 
