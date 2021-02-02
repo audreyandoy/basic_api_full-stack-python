@@ -1,4 +1,4 @@
-#!/Users/audrey/Documents/Ada/audrey-practice/Flask_Migrate/venv/bin/python3
+#!/Users/audrey/Documents/Ada/audrey-practice/flask_workshop_fin/flask_api_db/venv/bin/python3
 # EASY-INSTALL-ENTRY-SCRIPT: 'alembic==1.5.3','console_scripts','alembic'
 __requires__ = 'alembic==1.5.3'
 import re
