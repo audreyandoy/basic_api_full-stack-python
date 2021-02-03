@@ -85,8 +85,7 @@ def delete_user(id):
 
     return user_schema.jsonify(user)
 
-
-@app.route('/api')
+@app.route('/')
 @cross_origin()
 def hello():
     return "Hello World!"
