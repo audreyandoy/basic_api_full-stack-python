@@ -10,12 +10,6 @@ from google.auth.transport import requests
 CLIENT_ID = '415751135697-3pkh803j85i6gpth64lnbjc99i1bevbk.apps.googleusercontent.com'
 
 
-config = {
-    'ORIGINS': [
-        'http://localhost:3000/'
-    ]
-}
-
 # Init app
 app = Flask(__name__)
 cors = CORS(app)
