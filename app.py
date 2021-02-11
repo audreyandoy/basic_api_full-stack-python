@@ -1,18 +1,49 @@
-from flask import Flask, Blueprint, request, jsonify
+from flask import Flask, Blueprint, Response, session, request, jsonify, redirect, url_for
 from flask_cors import CORS, cross_origin
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow 
 from flask_migrate import Migrate
-import os 
-import sys
-print(sys.path)
+from google.oauth2 import id_token
+from google.auth.transport import requests
+
+from flask_login import (
+    LoginManager,
+    current_user, 
+    login_required, 
+    login_user, 
+    logout_user
+)
+
+# request = requests.Request()
+CLIENT_ID = '415751135697-3pkh803j85i6gpth64lnbjc99i1bevbk.apps.googleusercontent.com'
+
+
+
+# import sys
+# print(sys.path)
+
+# app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
+# GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
+# GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
+
+# from . import google_token 
+
+
+config = {
+    'ORIGINS': [
+        'http://localhost:3000/'
+    ]
+}
 
 # Init app
 app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
-basedir = os.path.abspath(os.path.dirname(__file__))
-
+# basedir = os.path.abspath(os.path.dirname(__file__))
+# login = loginManager()
+# login.init_app(app)
+# login.session_protection = 'strong'
+# app.secret_key = app.config['SECRET_KEY']
 
 # Database
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///workshop'
@@ -28,10 +59,14 @@ ma = Marshmallow(app)
 # User Model
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(128))
+    email = db.Column(db.String(128))
+    last_name = db.Column(db.String(128))
+    first_name = db.Column(db.String(128))
 
-    def __init__(self, name):
-        self.name = name
+    def __init__(self, email, last_name, first_name):
+        self.email = email 
+        self.last_name = last_name
+        self.first_name = first_name 
 
     def __repr__(self):
         return '<id {}>'.format(self.id) 
@@ -41,7 +76,9 @@ class UserSchema(ma.Schema):
     class Meta:
         fields = (
             'id',
-            'name'
+            'email',
+            'last_name',
+            'first_name'
         )
 
 # Init Schema
@@ -52,14 +89,46 @@ users_schema = UserSchema(many=True)
 @app.route('/api/user', methods=['POST'])
 @cross_origin()
 def add_user():
-  name = request.json['name']
+    email = request.json['data']['email']
+    last_name = request.json['data']['last_name']
+    first_name = request.json['data']['first_name']
 
-  new_user = User(name)
+    new_user = User(email, last_name, first_name)
 
-  db.session.add(new_user)
-  db.session.commit()
+    db.session.add(new_user)
+    db.session.commit()
 
-  return user_schema.jsonify(new_user)
+    return user_schema.jsonify(new_user)
+
+requested = requests.Request()
+
+@app.route("/login", methods = ['POST'])
+@cross_origin()
+def login():
+    token = {'id_token': request.json['data']['id_token']}
+    email = request.json['data']['email']
+    last_name = request.json['data']['last_name']
+    first_name = request.json['data']['first_name']
+    try:
+        id_info = id_token.verify_oauth2_token(token['id_token'], requested, CLIENT_ID)
+        print("verified token")
+
+        if email is None:
+            return("No email, don't redirect to /users")
+        if User.query.filter_by(email = email).first() is not None:
+            return("go to profile")
+        else:
+            add_user()
+        
+    except ValueError:
+        print("no token")
+        content = {"message": "invalid token"}
+        return Response(content)
+   
+    data = request.json["data"]
+    print(data)
+    return "wtf"
+
 
 # Get All Users
 @app.route('/api/user', methods=['GET'])
