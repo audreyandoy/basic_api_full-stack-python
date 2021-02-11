@@ -6,27 +6,8 @@ from flask_migrate import Migrate
 from google.oauth2 import id_token
 from google.auth.transport import requests
 
-from flask_login import (
-    LoginManager,
-    current_user, 
-    login_required, 
-    login_user, 
-    logout_user
-)
-
 # request = requests.Request()
 CLIENT_ID = '415751135697-3pkh803j85i6gpth64lnbjc99i1bevbk.apps.googleusercontent.com'
-
-
-
-# import sys
-# print(sys.path)
-
-# app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
-# GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
-# GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
-
-# from . import google_token 
 
 
 config = {
@@ -39,11 +20,7 @@ config = {
 app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
-# basedir = os.path.abspath(os.path.dirname(__file__))
-# login = loginManager()
-# login.init_app(app)
-# login.session_protection = 'strong'
-# app.secret_key = app.config['SECRET_KEY']
+
 
 # Database
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///workshop'
@@ -114,21 +91,18 @@ def login():
         print("verified token")
 
         if email is None:
-            return("No email, don't redirect to /users")
+            return("/", {"message": "gmail could not be saved"})
         if User.query.filter_by(email = email).first() is not None:
-            return("go to profile")
+            return({"route": "users", "data": request.json['data']['first_name']})
         else:
             add_user()
+            return({"route": "users", "data": request.json['data']['first_name']})
         
     except ValueError:
         print("no token")
         content = {"message": "invalid token"}
-        return Response(content)
+        return Response(content, "/")
    
-    data = request.json["data"]
-    print(data)
-    return "wtf"
-
 
 # Get All Users
 @app.route('/api/user', methods=['GET'])
